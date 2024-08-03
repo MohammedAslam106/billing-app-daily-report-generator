@@ -39,10 +39,6 @@ client
   // The `req` object contains the request data
   if (req.method === 'GET') {
     
-    const today = new Date();
-    const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0)).toISOString();
-    const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999)).toISOString();
-    
     const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt')
     ])
@@ -51,42 +47,30 @@ client
       Query.orderDesc('$createdAt')
     ])
 
-    log('AllBills',allBills.documents)
-
     const todaysBills=allBills.documents?.filter((item)=>{
-      log('Comparesion', item.$updatedAt.split('T')[0], new Date().toISOString().split('T')[0])
-      log('Condition',item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0])
       if(item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0]){
         return true
       }
     })
-
-  log('Todays Bills',todaysBills)
 
   return res.json({products:allProducts.documents?.map((item)=>item.$id),todaysBills:todaysBills?.map((item)=>item.$id)})
   }
 
   if (req.method === 'POST') {
 
-    const today = new Date().toISOString().split('T')[0];
-
-    const startOfToday = `${today}T00:00:00.000Z`;
-    const endOfToday = `${today}T23:59:59.999Z`;
-
     const totalStocks=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt')
-    ]).documents
+    ])
 
-    const totalStocksIds=totalStocks?.map((item)=>item.$id)
+    const totalStocksIds=totalStocks.documents?.map((item)=>item.$id)
 
-    log('TotalStocks',totalStocksIds)
-
-    const totalBills=await databases.listDocuments(databaseId,billsCollectionId,[
+    const allBills=await databases.listDocuments(databaseId,billsCollectionId,[
       Query.orderDesc('$createdAt')
-    ]).documents
+    ])
 
-    const todaysBills=totalBills?.filter((item)=>{
-      if(item.$updatedAt>=startOfToday || item.$updatedAt<=endOfToday){
+
+    const todaysBills=allBills.documents?.filter((item)=>{
+      if(item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0]){
         return true
       }
     })
