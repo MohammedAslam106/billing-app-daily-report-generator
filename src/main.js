@@ -38,15 +38,14 @@ client
 
   // The `req` object contains the request data
   if (req.method === 'GET') {
-    const today = new Date().toISOString().split('T')[0];
-
-    const startOfToday = `${today}T00:00:00.000Z`;
-    const endOfToday = `${today}T23:59:59.999Z`;
-
+    
     
     const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt')
-  ])
+    ])
+    const today = new Date();
+    const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0)).toISOString();
+    const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999)).toISOString();
 
   const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
     Query.orderDesc('$createdAt'),
@@ -54,7 +53,9 @@ client
     Query.lessThanEqual('$updatedAt', endOfToday)
   ]).documents
 
-  return res.json({products:allProducts.documents,todaysBills:todaysBills})
+  log(todaysBills)
+
+  return res.json({products:allProducts.documents?.map((item)=>item.$id),todaysBills:todaysBills?.map((item)=>item.$id)})
   }
 
   if (req.method === 'POST') {
@@ -65,10 +66,12 @@ client
     const endOfToday = `${today}T23:59:59.999Z`;
 
     const totalStocks=await databases.listDocuments(databaseId,productsCollectionId,[
-      Query.orderDesc('$createdAt'),
-      // Query.greaterThanEqual('$updatedAt', startOfToday),
-      // Query.lessThanEqual('$updatedAt', endOfToday)
-  ]).documents
+      Query.orderDesc('$createdAt')
+    ]).documents
+
+    const totalStocksIds=totalStocks?.map((item)=>item.$id)
+
+    log('TotalStocks',totalStocksIds)
 
     const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
       Query.orderDesc('$createdAt'),
@@ -79,7 +82,7 @@ client
     const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
       title:new Date().toLocaleDateString().replaceAll('/','-'),
       orders:todaysBills?.map((item)=>item.$id),
-      stocks:totalStocks?.map((item)=>item.$id)
+      stocks:totalStocksIds
     })
     log(createReport)
   return res.json(createReport)
