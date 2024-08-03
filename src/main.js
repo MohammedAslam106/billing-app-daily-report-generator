@@ -3,7 +3,19 @@ import { Client } from 'node-appwrite';
 // This is your Appwrite function
 // It's executed each time we get a request
 export default async ({ req, res, log, error }) => {
-  // Why not try the Appwrite SDK?
+  const appwriteConfig={
+  endpoint:process.env.endpoint, 
+  platform:process.env.platform,
+  projectId:process.env.projectId,
+  databaseId:process.env.databaseId,
+  billsCollectionId:process.env.billsCollectionId,
+  productsCollectionId:process.env.productsCollectionId,
+  quantityCollectionId:process.env.quantityCollectionId,
+  reportsCollectionId:process.env.reportsCollectionId,
+  storageId:process.env.storageId
+}
+
+const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollectionId,quantityCollectionId,storageId}=appwriteConfig
   //
   // const client = new Client()
   //    .setEndpoint('https://cloud.appwrite.io/v1')
@@ -20,7 +32,8 @@ export default async ({ req, res, log, error }) => {
   if (req.method === 'GET') {
     // Send a response with the res object helpers
     // `res.send()` dispatches a string back to the client
-    return res.send('Hello, World!');
+    // return res.send('Hello, World!');
+    return res.json(appwriteConfig)
   }
 
   // `res.json()` is a handy helper for sending JSON
