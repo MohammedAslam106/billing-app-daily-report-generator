@@ -69,8 +69,8 @@ client
 
     const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
       title:new Date().toLocaleDateString().replaceAll('/','-'),
-      orders:todaysBills,
-      stocks:totalStocks
+      orders:todaysBills.map((item)=>item.$id),
+      stocks:totalStocks.map((item)=>item.$id)
     })
     log(createReport)
   return res.json(createReport)
