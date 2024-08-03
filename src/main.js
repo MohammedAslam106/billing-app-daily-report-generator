@@ -63,8 +63,8 @@ client
 
     const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
       Query.orderDesc('$createdAt'),
-      Query.greaterEqual('$updatedAt', startOfToday),
-      Query.lessEqual('$updatedAt', endOfToday)
+      Query.greaterThanEqual('$updatedAt', startOfToday),
+      Query.lessThanEqual('$updatedAt', endOfToday)
     ]).documents
 
     const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
