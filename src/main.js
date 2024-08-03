@@ -1,4 +1,4 @@
-import { Client, Databases,Query } from 'node-appwrite';
+import { Client, Databases,Query,ID } from 'node-appwrite';
 
 // This is your Appwrite function
 // It's executed each time we get a request
@@ -49,14 +49,30 @@ client
   }
 
   if (req.method === 'POST') {
-    // Send a response with the res object helpers
-    // `res.send()` dispatches a string back to the client
-    // return res.send('Hello, World!');
-    // return res.json(appwriteConfig)
-    const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
-      Query.orderDesc('$createdAt')
-  ])
-  return res.json(allProducts.documents)
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const startOfToday = `${today}T00:00:00.000Z`;
+    const endOfToday = `${today}T23:59:59.999Z`;
+
+    const todaysStocks=await databases.listDocuments(databaseId,productsCollectionId,[
+      Query.orderDesc('$createdAt'),
+      Query.greaterEqual('$updatedAt', startOfToday),
+      Query.lessEqual('$updatedAt', endOfToday)
+  ]).documents
+
+    const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
+      Query.orderDesc('$createdAt'),
+      Query.greaterEqual('$updatedAt', startOfToday),
+      Query.lessEqual('$updatedAt', endOfToday)
+    ]).documents
+
+    const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
+      title:new Date().toLocaleDateString().replaceAll('/','-'),
+      stocks:todaysStocks,
+      orders:todaysBills
+    })
+  return res.json(createReport)
   }
 
   // `res.json()` is a handy helper for sending JSON
