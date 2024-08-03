@@ -1,4 +1,4 @@
-import { Client } from 'node-appwrite';
+import { Client, Databases } from 'node-appwrite';
 
 // This is your Appwrite function
 // It's executed each time we get a request
@@ -22,6 +22,15 @@ const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollecti
   //    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
   //    .setKey(process.env.APPWRITE_API_KEY);
 
+  const client = new Client();
+
+  const databases=new Databases(client)
+
+client
+    .setEndpoint(endpoint) // Your Appwrite Endpoint
+    .setProject(projectId) // Your project ID
+    .setPlatform(platform)
+
   // You can log messages to the console
   log('Hello, Logs!');
 
@@ -33,7 +42,11 @@ const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollecti
     // Send a response with the res object helpers
     // `res.send()` dispatches a string back to the client
     // return res.send('Hello, World!');
-    return res.json(appwriteConfig)
+    // return res.json(appwriteConfig)
+    const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
+      Query.orderDesc('$createdAt')
+  ])
+  return res.json(allProducts.documents)
   }
 
   // `res.json()` is a handy helper for sending JSON
