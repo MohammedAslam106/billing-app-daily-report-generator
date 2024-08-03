@@ -15,7 +15,7 @@ export default async ({ req, res, log, error }) => {
   storageId:process.env.storageId
 }
 
-const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollectionId,quantityCollectionId,storageId}=appwriteConfig
+const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollectionId,quantityCollectionId,storageId,reportsCollectionId}=appwriteConfig
   //
   // const client = new Client()
   //    .setEndpoint('https://cloud.appwrite.io/v1')
