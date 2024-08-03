@@ -45,7 +45,14 @@ client
     const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt')
   ])
-  return res.json(allProducts.documents)
+
+  const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
+    Query.orderDesc('$createdAt'),
+    Query.greaterThanEqual('$updatedAt', startOfToday),
+    Query.lessThanEqual('$updatedAt', endOfToday)
+  ]).documents
+
+  return res.json({products:allProducts.documents,todaysBills:todaysBills})
   }
 
   if (req.method === 'POST') {
@@ -69,8 +76,8 @@ client
 
     const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
       title:new Date().toLocaleDateString().replaceAll('/','-'),
-      orders:todaysBills.map((item)=>item.$id),
-      stocks:totalStocks.map((item)=>item.$id)
+      orders:todaysBills?.map((item)=>item.$id),
+      stocks:totalStocks?.map((item)=>item.$id)
     })
     log(createReport)
   return res.json(createReport)
