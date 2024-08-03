@@ -29,7 +29,6 @@ const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollecti
 client
     .setEndpoint(endpoint) // Your Appwrite Endpoint
     .setProject(projectId) // Your project ID
-    // .setPlatform(platform)
 
   // You can log messages to the console
   log('Hello, Logs!');
@@ -39,6 +38,17 @@ client
 
   // The `req` object contains the request data
   if (req.method === 'GET') {
+    // Send a response with the res object helpers
+    // `res.send()` dispatches a string back to the client
+    // return res.send('Hello, World!');
+    // return res.json(appwriteConfig)
+    const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
+      Query.orderDesc('$createdAt')
+  ])
+  return res.json(allProducts.documents)
+  }
+
+  if (req.method === 'POST') {
     // Send a response with the res object helpers
     // `res.send()` dispatches a string back to the client
     // return res.send('Hello, World!');
