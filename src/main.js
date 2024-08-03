@@ -51,13 +51,17 @@ client
       Query.orderDesc('$createdAt')
     ]).documents
 
+    log('TotalBills',totalBills)
+
     const todaysBills=totalBills?.filter((item)=>{
-      if(item.$updatedAt>=startOfToday || item.$updatedAt<=endOfToday){
+      log('Comparesion', item.$updatedAt.split('T')[0], new Date().toISOString().split('T')[0])
+      log('Condition',item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0])
+      if(item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0]){
         return true
       }
     })
 
-  log(todaysBills)
+  log('Todays Bills',todaysBills)
 
   return res.json({products:allProducts.documents?.map((item)=>item.$id),todaysBills:todaysBills?.map((item)=>item.$id)})
   }
