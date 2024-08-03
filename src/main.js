@@ -1,4 +1,4 @@
-import { Client, Databases } from 'node-appwrite';
+import { Client, Databases,Query } from 'node-appwrite';
 
 // This is your Appwrite function
 // It's executed each time we get a request
