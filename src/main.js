@@ -57,8 +57,8 @@ client
 
     const todaysStocks=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt'),
-      Query.greaterEqual('$updatedAt', startOfToday),
-      Query.lessEqual('$updatedAt', endOfToday)
+      Query.greaterThanEqual('$updatedAt', startOfToday),
+      Query.lessThanEqual('$updatedAt', endOfToday)
   ]).documents
 
     const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
