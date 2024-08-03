@@ -55,10 +55,10 @@ client
     const startOfToday = `${today}T00:00:00.000Z`;
     const endOfToday = `${today}T23:59:59.999Z`;
 
-    const todaysStocks=await databases.listDocuments(databaseId,productsCollectionId,[
+    const totalStocks=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt'),
-      Query.greaterThanEqual('$updatedAt', startOfToday),
-      Query.lessThanEqual('$updatedAt', endOfToday)
+      // Query.greaterThanEqual('$updatedAt', startOfToday),
+      // Query.lessThanEqual('$updatedAt', endOfToday)
   ]).documents
 
     const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
@@ -69,9 +69,10 @@ client
 
     const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
       title:new Date().toLocaleDateString().replaceAll('/','-'),
-      stocks:todaysStocks,
-      orders:todaysBills
+      orders:todaysBills,
+      stocks:totalStocks
     })
+    log(createReport)
   return res.json(createReport)
   }
 
