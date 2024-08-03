@@ -47,13 +47,13 @@ client
       Query.orderDesc('$createdAt')
     ])
 
-    const totalBills=await databases.listDocuments(databaseId,billsCollectionId,[
+    const allBills=await databases.listDocuments(databaseId,billsCollectionId,[
       Query.orderDesc('$createdAt')
-    ]).documents
+    ])
 
-    log('TotalBills',totalBills)
+    log('AllBills',allBills.documents)
 
-    const todaysBills=totalBills?.filter((item)=>{
+    const todaysBills=allBills.documents?.filter((item)=>{
       log('Comparesion', item.$updatedAt.split('T')[0], new Date().toISOString().split('T')[0])
       log('Condition',item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0])
       if(item.$updatedAt.split('T')[0]==new Date().toISOString().split('T')[0]){
