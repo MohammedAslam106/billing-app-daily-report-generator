@@ -38,10 +38,12 @@ client
 
   // The `req` object contains the request data
   if (req.method === 'GET') {
-    // Send a response with the res object helpers
-    // `res.send()` dispatches a string back to the client
-    // return res.send('Hello, World!');
-    // return res.json(appwriteConfig)
+    const today = new Date().toISOString().split('T')[0];
+
+    const startOfToday = `${today}T00:00:00.000Z`;
+    const endOfToday = `${today}T23:59:59.999Z`;
+
+    
     const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt')
   ])
