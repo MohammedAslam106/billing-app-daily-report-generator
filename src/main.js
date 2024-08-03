@@ -29,7 +29,7 @@ const {endpoint,platform,projectId,databaseId,billsCollectionId,productsCollecti
 client
     .setEndpoint(endpoint) // Your Appwrite Endpoint
     .setProject(projectId) // Your project ID
-    .setPlatform(platform)
+    // .setPlatform(platform)
 
   // You can log messages to the console
   log('Hello, Logs!');
