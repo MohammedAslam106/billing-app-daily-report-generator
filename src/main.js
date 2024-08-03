@@ -39,19 +39,23 @@ client
   // The `req` object contains the request data
   if (req.method === 'GET') {
     
+    const today = new Date();
+    const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0)).toISOString();
+    const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999)).toISOString();
     
     const allProducts=await databases.listDocuments(databaseId,productsCollectionId,[
       Query.orderDesc('$createdAt')
     ])
-    const today = new Date();
-    const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0)).toISOString();
-    const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999)).toISOString();
 
-  const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
-    Query.orderDesc('$createdAt'),
-    Query.greaterThanEqual('$updatedAt', startOfToday),
-    Query.lessThanEqual('$updatedAt', endOfToday)
-  ]).documents
+    const totalBills=await databases.listDocuments(databaseId,billsCollectionId,[
+      Query.orderDesc('$createdAt')
+    ]).documents
+
+    const todaysBills=totalBills?.filter((item)=>{
+      if(item.$updatedAt>=startOfToday || item.$updatedAt<=endOfToday){
+        return true
+      }
+    })
 
   log(todaysBills)
 
@@ -73,11 +77,15 @@ client
 
     log('TotalStocks',totalStocksIds)
 
-    const todaysBills=await databases.listDocuments(databaseId,billsCollectionId,[
-      Query.orderDesc('$createdAt'),
-      Query.greaterThanEqual('$updatedAt', startOfToday),
-      Query.lessThanEqual('$updatedAt', endOfToday)
+    const totalBills=await databases.listDocuments(databaseId,billsCollectionId,[
+      Query.orderDesc('$createdAt')
     ]).documents
+
+    const todaysBills=totalBills?.filter((item)=>{
+      if(item.$updatedAt>=startOfToday || item.$updatedAt<=endOfToday){
+        return true
+      }
+    })
 
     const createReport=await databases.createDocument(databaseId,reportsCollectionId,ID.unique(),{
       title:new Date().toLocaleDateString().replaceAll('/','-'),
